@@ -13,11 +13,7 @@ Map model
 1> Model = [
     {<<"login">>, required, string, login, [non_empty]},
     {<<"notifyAt">>, required, datetime, notify_at, []},
-    {<<"type">>, required, {strlist, string}, type, [
-        {each, [
-            {enum, [<<"sms">>, <<"email">>, <<"twitter">>, <<"fb">>]}
-        ]}
-    ], [<<"email">>]},
+    {<<"type">>, required, {strlist, {enum, [sms, email, twitter, fb]}}, type, [], [email]},
     {<<"title">>, required, string, title, [non_empty]},
     {<<"message">>, optional, string, msg, []}
 ].
@@ -39,7 +35,7 @@ Map model
       msg => <<"Hooray!!!">>,
       notify_at => {{2088,12,7},{8,0,0}},
       title => <<"Happy 100 birth day!">>,
-      type => [<<"email">>,<<"sms">>]}}.
+      type => [email, sms]}}.
 ```
 
 ### Error
@@ -54,7 +50,7 @@ Map model
 4> emodel:from_map(Data, #{}, Model).
 {error,[{<<"login">>,<<"is empty">>},
         {<<"notifyAt">>,<<"bad datetime">>},
-        {<<"type">>,[{3,unknown}]},
+        {<<"type">>,[{3,<<"unknown">>}]},
         {<<"title">>,required}]}
 ```
 
@@ -67,11 +63,7 @@ Tuple model
 2> Model = [
     {<<"login">>, required, string, #data.login, [non_empty]},
     {<<"notifyAt">>, required, datetime, #data.notify_at, []},
-    {<<"type">>, required, {strlist, string}, #data.type, [
-        {each, [
-            {enum, [<<"sms">>, <<"email">>, <<"twitter">>, <<"fb">>]}
-        ]}
-    ], [<<"email">>]},
+    {<<"type">>, required, {strlist, {enum, [sms, email, twitter, fb]}}, #data.type, [], [email]},
     {<<"title">>, required, string, #data.title, [non_empty]},
     {<<"message">>, optional, string, #data.msg, []}
 ].
@@ -79,7 +71,7 @@ Tuple model
 3> emodel:from_map(Data, #data{}, Model).
 {ok,#data{login = <<"egobrain">>,
           notify_at = {{2088,12,7},{8,0,0}},
-          type = [<<"email">>,<<"sms">>],
+          type = [email, sms],
           title = <<"Happy 100 birth day!">>,msg = <<"Hooray!!!">>}}.
 ```
 
@@ -268,11 +260,8 @@ get_json(Req, State) ->
     Result = emodel:from_proplist(QsVals, #{}, [
         {<<"limit">>, optional, integer, limit, [{'>', 0}]},
         {<<"offset">>, optional, integer, offset, [{'>=', 0}]},
-        {<<"fields">>, required, {strlist, binary}, fields, [
-            {each, [
-                {enum, [<<"id">>, <<"name">>, <<"isArchived">>]}
-            ]}
-        ], emodel:default_value([<<"id">>, <<"name">>])},
+        {<<"fields">>, required, {strlist, {enum, [id,name,isArchived]}}, fields, [], [id, name]}
+    ]),
     case Result of
         {ok, #{limit := L, offset := O, fields := F}} ->
             %% Get data using L,O,F
