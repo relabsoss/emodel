@@ -198,7 +198,9 @@ float(Bin) when is_binary(Bin) ->
         try binary_to_integer(Bin) of Int -> {ok, Int * 1.0}
         catch error:badarg -> {error, <<"error bad float">>}
         end
-    end.
+    end;
+float(_) ->
+    {error, <<"bad float>>}.
 
 %% =============================================================================
 %% Complex converters
