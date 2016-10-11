@@ -200,7 +200,7 @@ float(Bin) when is_binary(Bin) ->
         end
     end;
 float(_) ->
-    {error, <<"bad float>>}.
+    {error, <<"bad float">>}.
 
 %% =============================================================================
 %% Complex converters
